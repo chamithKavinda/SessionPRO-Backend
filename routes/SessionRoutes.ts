@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createSession , getAllSessions , updateSession} from "../repository/SessionRepository";
+import { createSession , getAllSessions , updateSession , deleteSession} from "../repository/SessionRepository";
 
 const sessionRouter = Router();
 
@@ -42,6 +42,21 @@ sessionRouter.put("/:sessionID", async (req,res) => {
         } else {
             console.error("Error in PUT /session/:sessionID:",err);
             res.status(500).json({error: "Failed to update session"});
+        }
+    }
+});
+
+sessionRouter.delete("/:sessionID", async (req, res) => {
+    try {
+        const sessionID = req.params.sessionID;
+        await deleteSession(sessionID);
+        res.json({sessionID})
+    } catch (err) {
+        if (err instanceof Error && err.message.includes("Record to delete does not exist")) {
+            res.status(404).json({ error: "Session not found"});
+        } else {
+            console.error("Error in DELETE /session/:sessionID:", err);
+            res.status(500).json({error: "Failed to delete session"});
         }
     }
 });

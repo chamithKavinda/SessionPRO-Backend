@@ -38,3 +38,14 @@ export async function updateSession(sessionID: string, sessionData: Partial<Sess
     }
 }
 
+export async function deleteSession(sessionID: string) {
+    try {
+        await prisma.session.delete({
+            where: {sessionID},
+        });
+        return true;
+    } catch (err) {
+        console.error(`Error deleting session with id ${sessionID}:`, err);
+        throw err;
+    }
+}
