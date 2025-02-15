@@ -16,3 +16,12 @@ export async function createSession(sessionData: SessionCreateInput) {
     }
 }
 
+export async function getAllSessions() {
+    try {
+        return await prisma.session.findMany();
+    } catch (err) {
+        console.error("Error fetching sessions:", err);
+        throw new Error("Failed to fetch sessions from the repository");
+    }
+}
+
