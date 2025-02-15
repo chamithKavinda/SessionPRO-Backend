@@ -1,5 +1,5 @@
 class Session {
-    id: string;
+    sessionID: string;
     name: string;
     description: string;
     date: string;
@@ -9,7 +9,7 @@ class Session {
     speakerName: string;
 
     constructor(
-        id: string,
+        sessionID: string,
         name: string,
         description: string,
         date: string,
@@ -18,7 +18,7 @@ class Session {
         duration: string,
         speakerName: string
     ) {
-        this.id = id;
+        this.sessionID = sessionID;
         this.name = name;
         this.description = description;
         this.date = date;
