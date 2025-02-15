@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createSession , getAllSessions} from "../repository/SessionRepository";
+import { createSession , getAllSessions , updateSession} from "../repository/SessionRepository";
 
 const sessionRouter = Router();
 
@@ -25,6 +25,24 @@ sessionRouter.get("/", async (req,res) => {
     } catch (err) {
         console.error("Error in GET /sessions:", err);
         res.status(500).json({ error: "Failed to fetch sessions"});
+    }
+});
+
+sessionRouter.put("/:sessionID", async (req,res) => {
+    try {
+        const sessionID =  req.params.sessionID;
+        const updateData = req.body;
+        const updatedSession = await updateSession(sessionID,updateData);
+        res.json(updatedSession);
+    } catch (err) {
+        if (err instanceof Error && err.message.includes("Record to update not found")){
+            res.status(404).json({ error: "Session not found"});
+        } else if (err instanceof Error && err.message.includes("Unique constraint")) {
+            res.status(400).json({ error: "Session Id already exists"});
+        } else {
+            console.error("Error in PUT /session/:sessionID:",err);
+            res.status(500).json({error: "Failed to update session"});
+        }
     }
 });
 

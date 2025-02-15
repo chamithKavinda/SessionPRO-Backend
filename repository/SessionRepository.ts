@@ -25,3 +25,16 @@ export async function getAllSessions() {
     }
 }
 
+export async function updateSession(sessionID: string, sessionData: Partial<SessionCreateInput>) {
+    try {
+        const session = await prisma.session.update({
+            where: {sessionID},
+            data: sessionData,
+        });
+        return session;
+    } catch (err) {
+        console.error(`Error updating session with id ${sessionID}:`, err);
+        throw err;
+    }
+}
+
