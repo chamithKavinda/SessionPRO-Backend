@@ -1,6 +1,7 @@
 import express from "express";
 import sessionRouter from "./routes/SessionRoutes";
 import speakerRouter from "./routes/SpeakerRoutes";
+import userRouter from "./routes/UserRoutes";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use("/", (req, res, next) => {
 
 app.use("/session", sessionRouter);
 app.use("/speaker", speakerRouter);
+app.use("/user", userRouter);
 
 app.listen(3000, (err) => {
     if (err) {

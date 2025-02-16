@@ -1,10 +1,12 @@
+import Role from '../model/Role';
+
 class User {
     username: string;
     email: string;
     password: string;
-    role: string;
+    role: Role;
 
-    constructor(username: string, email: string, password: string, role: string) {
+    constructor(username: string, email: string, password: string, role: Role) {
         this.username = username;
         this.email = email;
         this.password = password;
