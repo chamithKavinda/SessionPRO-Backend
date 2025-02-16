@@ -30,3 +30,22 @@ export async function getAllSpeakers() {
         throw new Error("Failed to fetch speakers from the repository");
     }
 }
+
+type SpeakerUpdateInput = Partial<SpeakerCreateInput> & { speakerEmail: string };
+
+export async function updateSpeaker(speakerEmail: string, speakerData: {
+    name: any;
+    bio: any;
+    expertise: any;
+    image: string
+}) {
+    try {
+        return await prisma.speaker.update({
+            where: { speakerEmail },
+            data: speakerData,
+        });
+    } catch (err) {
+        console.error('Error updating speaker:', err);
+        throw new Error('Failed to update speaker');
+    }
+}

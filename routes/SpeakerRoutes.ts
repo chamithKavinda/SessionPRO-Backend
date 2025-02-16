@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from 'multer';
-import { createSpeaker, getAllSpeakers } from "../repository/SpeakerRepository";
+import { createSpeaker, getAllSpeakers, updateSpeaker } from "../repository/SpeakerRepository";
 
 // Configure multer for file uploads
 const upload = multer();
@@ -33,6 +33,23 @@ speakerRouter.get("/", async (req, res) => {
     } catch (err) {
         console.error("Error in GET /speakers:", err);
         res.status(500).json({ error: "Failed to fetch speakers" });
+    }
+});
+
+speakerRouter.put('/:email', upload.single('image'), async (req, res) => {
+    try {
+        const speakerEmail = req.params.email;
+        const { name, bio, expertise } = req.body;
+        const image = req.file ? req.file.buffer.toString('base64') : '';
+
+        const updatedSpeaker = { name, bio, expertise, image };
+        console.log("Received update data:", updatedSpeaker);
+
+        const speaker = await updateSpeaker(speakerEmail, updatedSpeaker);
+        res.status(200).json(speaker);
+    } catch (err) {
+        console.error('Error in PUT /speaker:', err);
+        res.status(500).json({ error: 'Failed to update speaker' });
     }
 });
 
