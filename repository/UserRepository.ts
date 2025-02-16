@@ -21,3 +21,12 @@ export async function createUser(userData: UserCreateInput) {
         throw new Error('Failed to create user');
     }
 }
+
+export async function getAllUsers() {
+    try {
+        return await prisma.user.findMany();
+    } catch (err) {
+        console.error("Error fetching users:", err);
+        throw new Error("Failed to fetch users from the repository");
+    }
+}

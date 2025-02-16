@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser } from "../repository/UserRepository";
+import { createUser ,getAllUsers} from "../repository/UserRepository";
 
 const userRouter = Router();
 
@@ -15,6 +15,16 @@ userRouter.post("/", async (req,res) => {
             console.error("Error in POST /user:", err);
             res.status(500).json({error: "Failed to create user"});
         }
+    }
+});
+
+userRouter.get("/", async (req,res) => {
+    try {
+        const userList = await getAllUsers();
+        res.json(userList);
+    } catch (err) {
+        console.error("Error in GET /users:", err);
+        res.status(500).json({ error: "Failed to fetch users"});
     }
 });
 
