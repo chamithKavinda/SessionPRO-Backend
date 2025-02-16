@@ -1,8 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from 'bcrypt';
 import User from "../model/User";
 import Role from "../model/Role";
 
 const prisma = new PrismaClient();
+
+const SALT_ROUNDS = 10;
 
 type UserCreateInput = {
     username: string;
@@ -11,10 +14,16 @@ type UserCreateInput = {
     role: Role;
 };
 
+async function hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, SALT_ROUNDS);
+}
+
 export async function createUser(userData: UserCreateInput) {
     try {
+        const hashedPassword = await hashPassword(userData.password);
+        const userWithHashedPassword = { ...userData, password: hashedPassword };
         return await prisma.user.create({
-            data: userData,
+            data: userWithHashedPassword,
         });
     } catch (err) {
         console.error('Error creating user:', err);
@@ -35,9 +44,14 @@ type UserUpdateInput = Partial<UserCreateInput> & { email: string };
 
 export async function updateUser(email: string, userData: { username: any; password: any; role: any }) {
     try {
+        let updatedData = { ...userData };
+        if (userData.password) {
+            const hashedPassword = await hashPassword(userData.password);
+            updatedData = { ...userData, password: hashedPassword };
+        }
         return await prisma.user.update({
             where: { email },
-            data: userData,
+            data: updatedData,
         });
     } catch (err) {
         console.error('Error updating user:', err);
