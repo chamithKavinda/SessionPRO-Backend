@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from 'multer';
-import { createSpeaker } from "../repository/SpeakerRepository";
+import { createSpeaker, getAllSpeakers } from "../repository/SpeakerRepository";
 
 // Configure multer for file uploads
 const upload = multer();
@@ -23,6 +23,16 @@ speakerRouter.post('/', upload.single('image'), async (req, res) => {
             console.error('Error in POST /speaker:', err);
             res.status(500).json({ error: 'Failed to create speaker' });
         }
+    }
+});
+
+speakerRouter.get("/", async (req, res) => {
+    try {
+        const speakerList = await getAllSpeakers();
+        res.json(speakerList);
+    } catch (err) {
+        console.error("Error in GET /speakers:", err);
+        res.status(500).json({ error: "Failed to fetch speakers" });
     }
 });
 

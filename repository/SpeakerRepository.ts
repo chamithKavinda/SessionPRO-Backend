@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import Speaker from "../model/Speaker";
 
 const prisma = new PrismaClient();
 
@@ -18,5 +19,14 @@ export async function createSpeaker(speakerData: SpeakerCreateInput) {
     } catch (err) {
         console.error('Error creating speaker:', err);
         throw new Error('Failed to create speaker');
+    }
+}
+
+export async function getAllSpeakers() {
+    try {
+        return await prisma.speaker.findMany();
+    } catch (err) {
+        console.error("Error fetching speakers:", err);
+        throw new Error("Failed to fetch speakers from the repository");
     }
 }
