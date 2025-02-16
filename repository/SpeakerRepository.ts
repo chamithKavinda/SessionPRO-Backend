@@ -49,3 +49,14 @@ export async function updateSpeaker(speakerEmail: string, speakerData: {
         throw new Error('Failed to update speaker');
     }
 }
+
+export async function deleteSpeaker(speakerEmail: string) {
+    try {
+        return await prisma.speaker.delete({
+            where: { speakerEmail },
+        });
+    } catch (err) {
+        console.error('Error deleting speaker:', err);
+        throw new Error('Failed to delete speaker');
+    }
+}

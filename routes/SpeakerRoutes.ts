@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from 'multer';
-import { createSpeaker, getAllSpeakers, updateSpeaker } from "../repository/SpeakerRepository";
+import { createSpeaker, getAllSpeakers, updateSpeaker , deleteSpeaker } from "../repository/SpeakerRepository";
 
 // Configure multer for file uploads
 const upload = multer();
@@ -50,6 +50,18 @@ speakerRouter.put('/:email', upload.single('image'), async (req, res) => {
     } catch (err) {
         console.error('Error in PUT /speaker:', err);
         res.status(500).json({ error: 'Failed to update speaker' });
+    }
+});
+
+speakerRouter.delete('/:email', async (req, res) => {
+    try {
+        const speakerEmail = req.params.email;
+
+        await deleteSpeaker(speakerEmail);
+        res.status(204).send();
+    } catch (err) {
+        console.error('Error in DELETE /speaker:', err);
+        res.status(500).json({ error: 'Failed to delete speaker' });
     }
 });
 
