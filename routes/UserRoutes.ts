@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, getAllUsers, updateUser } from "../repository/UserRepository";
+import { createUser, getAllUsers, updateUser , deleteUser} from "../repository/UserRepository";
 
 const userRouter = Router();
 
@@ -44,4 +44,15 @@ userRouter.put('/:email', async (req, res) => {
     }
 });
 
+userRouter.delete('/:email', async (req, res) => {
+    try {
+        const email = req.params.email;
+
+        await deleteUser(email);
+        res.status(204).send();
+    } catch (err) {
+        console.error('Error in DELETE /user:', err);
+        res.status(500).json({ error: 'Failed to delete user' });
+    }
+});
 export default userRouter;

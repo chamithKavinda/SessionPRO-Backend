@@ -44,3 +44,14 @@ export async function updateUser(email: string, userData: { username: any; passw
         throw new Error('Failed to update user');
     }
 }
+
+export async function deleteUser(email: string) {
+    try {
+        return await prisma.user.delete({
+            where: { email },
+        });
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        throw new Error('Failed to delete user');
+    }
+}
