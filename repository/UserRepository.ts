@@ -30,3 +30,17 @@ export async function getAllUsers() {
         throw new Error("Failed to fetch users from the repository");
     }
 }
+
+type UserUpdateInput = Partial<UserCreateInput> & { email: string };
+
+export async function updateUser(email: string, userData: { username: any; password: any; role: any }) {
+    try {
+        return await prisma.user.update({
+            where: { email },
+            data: userData,
+        });
+    } catch (err) {
+        console.error('Error updating user:', err);
+        throw new Error('Failed to update user');
+    }
+}
