@@ -1,18 +1,20 @@
-import {PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
+import { v4 as uuidv4 } from 'uuid';
 import Session from "../model/Session";
 
 const prisma = new PrismaClient();
 
 type SessionCreateInput = Omit<Session, "sessionID">;
 
-export async function createSession(sessionData: SessionCreateInput) {
+export async function createSession(sessionData: SessionCreateInput & { sessionID?: string }) {
     try {
+        const sessionID = sessionData.sessionID || uuidv4(); // Generate a unique ID if not provided
         return await prisma.session.create({
-            data: sessionData,
+            data: { ...sessionData, sessionID },
         });
     } catch (err) {
         console.error("Error creating session:", err);
-        throw new Error("Fialed to create session");
+        throw new Error("Failed to create session");
     }
 }
 
@@ -28,7 +30,7 @@ export async function getAllSessions() {
 export async function updateSession(sessionID: string, sessionData: Partial<SessionCreateInput>) {
     try {
         const session = await prisma.session.update({
-            where: {sessionID},
+            where: { sessionID },
             data: sessionData,
         });
         return session;
@@ -41,7 +43,7 @@ export async function updateSession(sessionID: string, sessionData: Partial<Sess
 export async function deleteSession(sessionID: string) {
     try {
         await prisma.session.delete({
-            where: {sessionID},
+            where: { sessionID },
         });
         return true;
     } catch (err) {
