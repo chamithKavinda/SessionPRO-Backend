@@ -38,3 +38,8 @@ model User {
   password String @db.VarChar(255)
   role     String @db.VarChar(50)
 }
+
+enum Role {
+  USER
+  ADMIN
+}

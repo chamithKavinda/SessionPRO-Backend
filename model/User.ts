@@ -4,7 +4,7 @@ class User {
     username: string;
     email: string;
     password: string;
-    role: Role;
+    role: Role; 
 
     constructor(username: string, email: string, password: string, role: Role) {
         this.username = username;
