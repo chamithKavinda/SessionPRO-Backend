@@ -1,8 +1,8 @@
 import express from "express";
-import {createUser, verifyUserCredentials} from "../repository/AuthRepository";
-import User from "../model/User";
-import jwt, {Secret} from "jsonwebtoken";
+import { createUser, verifyUserCredentials } from "../repository/AuthRepository";
+import jwt, { Secret } from "jsonwebtoken";
 import dotenv from 'dotenv';
+import User from "../model/User";
 
 dotenv.config();
 
@@ -11,17 +11,16 @@ const router = express.Router();
 router.post("/login", async (req, res) => {
     const { email, password } = req.body.user;
 
-    const user: { email: any; password: any } = { email, password };
-
     try {
-        const isVerified = await verifyUserCredentials(user);
+        const verifiedUser = await verifyUserCredentials({ email, password });
 
-        if (isVerified) {
-            const token = jwt.sign({ email }, process.env.SECRET_KEY as Secret, { expiresIn: "1d" });
-            const refreshToken = jwt.sign({ email }, process.env.REFRESH_TOKEN as Secret, { expiresIn: "7d" });
+        if (verifiedUser) {
+            const { email, role } = verifiedUser;  // Assuming 'verifyUserCredentials' returns an object with email and role
+            const token = jwt.sign({ email, role }, process.env.SECRET_KEY as Secret, { expiresIn: "1d" });
+            const refreshToken = jwt.sign({ email, role }, process.env.REFRESH_TOKEN as Secret, { expiresIn: "7d" });
             res.json({ accessToken: token, refreshToken: refreshToken });
         } else {
-            res.sendStatus(403).send('Invalid credentials');
+            res.status(403).send('Invalid credentials');
         }
     } catch (err) {
         console.error(err);
@@ -50,8 +49,8 @@ router.post("/refresh-token", async (req, res) => {
     if (!refresh_token) res.status(401).send('No token provided');
 
     try {
-        const payload = jwt.verify(refresh_token as string, process.env.REFRESH_TOKEN as Secret) as { email: string, iat: number };
-        const token = jwt.sign({ email: payload.email }, process.env.SECRET_KEY as Secret, { expiresIn: "1m" });
+        const payload = jwt.verify(refresh_token as string, process.env.REFRESH_TOKEN as Secret) as { email: string, role: string, iat: number };
+        const token = jwt.sign({ email: payload.email, role: payload.role }, process.env.SECRET_KEY as Secret, { expiresIn: "1m" });
         res.json({ accessToken: token });
     } catch (err) {
         console.error(err);
@@ -66,8 +65,9 @@ export function authenticateToken(req: express.Request, res: express.Response, n
     if (!token) res.status(401).send('No token provided');
 
     try {
-        const payload = jwt.verify(token as string, process.env.SECRET_KEY as Secret) as { email: string, iat: number };
+        const payload = jwt.verify(token as string, process.env.SECRET_KEY as Secret) as { email: string, role: string, iat: number };
         req.body.email = payload.email;
+        req.body.role = payload.role;
         next();
     } catch (err) {
         res.status(401).send(err);

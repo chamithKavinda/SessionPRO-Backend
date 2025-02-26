@@ -1,7 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from "bcrypt";
 import Role from "../model/Role";
-import User from "../model/User";
 
 const prisma = new PrismaClient();
 const SALT_ROUNDS = 10;
@@ -44,13 +43,15 @@ export async function verifyUserCredentials(verifyUser: { email: any; password: 
     });
 
     if (!user) {
-        return false;
+        return null;
     }
 
-    const userWithRole: User = {
-        ...user,
-        role: convertToRole(user.role)
-    };
+    const isPasswordValid = await bcrypt.compare(verifyUser.password, user.password);
 
-    return await bcrypt.compare(verifyUser.password, user.password);
+    if (!isPasswordValid) {
+        return null;
+    }
+
+    return { email: user.email, role: convertToRole(user.role) };
 }
+
